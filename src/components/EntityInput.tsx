@@ -59,6 +59,7 @@ export function EntityInput({
         codeBlock: false,
         horizontalRule: false,
       }),
+      // eslint-disable-next-line react-hooks/refs
       EntityNode.configure({
         mappingRef,
         onEntityClick: (id, pos) => onEntityClickRef.current?.(id, pos),
