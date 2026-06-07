@@ -16,7 +16,10 @@ export default defineConfig({
       fileName: (format) => `prompt-pill.${format}.js`,
     },
     rollupOptions: {
-      external: ['react', 'react-dom', '@tiptap/react', '@tiptap/starter-kit', '@tiptap/core', '@tiptap/pm'],
+      external: (id) =>
+        id === 'react' ||
+        id === 'react-dom' ||
+        id.startsWith('@tiptap/'),
       output: {
         globals: {
           react: 'React',
