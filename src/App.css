@@ -101,6 +101,8 @@ h1 {
   font-size: 0.9em;
   line-height: 1.4;
   white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
 }
 
 /* ── Plain text preview ──────────────────────────────── */

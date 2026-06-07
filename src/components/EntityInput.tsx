@@ -1,19 +1,56 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
+import { generateText, type JSONContent, type Extensions } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
-import { EntityMark } from '../extensions/EntityMark'
+import { EntityNode } from '../extensions/EntityNode'
 
 export interface EntityInputProps {
   value?: string
   onChange?: (value: string) => void
   placeholder?: string
+  mapping?: Record<string, string>
+  onEntityClick?: (id: string, pos: number) => void
 }
 
-export function EntityInput({ value, onChange, placeholder }: EntityInputProps) {
+const ENTITY_SPLIT_REGEX = /(\{\{[\w.[\]]+\}\})/g
+
+function textToContent(text: string): JSONContent {
+  const parts = text.split(ENTITY_SPLIT_REGEX).filter(Boolean)
+
+  const inlineContent: JSONContent[] = parts.map((part) => {
+    const match = part.match(/^\{\{([\w.[\]]+)\}\}$/)
+    if (match) {
+      return { type: 'entity', attrs: { id: match[1] } }
+    }
+    return { type: 'text', text: part }
+  })
+
+  return {
+    type: 'doc',
+    content: [{ type: 'paragraph', content: inlineContent }],
+  }
+}
+
+export function EntityInput({
+  value,
+  onChange,
+  placeholder,
+  mapping,
+  onEntityClick,
+}: EntityInputProps) {
+  const mappingRef = useRef(mapping)
+  useEffect(() => {
+    mappingRef.current = mapping
+  }, [mapping])
+
+  const onEntityClickRef = useRef(onEntityClick)
+  useEffect(() => {
+    onEntityClickRef.current = onEntityClick
+  }, [onEntityClick])
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
-        // Disable block nodes we don't need; keep only paragraph + text
         heading: false,
         blockquote: false,
         bulletList: false,
@@ -22,9 +59,12 @@ export function EntityInput({ value, onChange, placeholder }: EntityInputProps) 
         codeBlock: false,
         horizontalRule: false,
       }),
-      EntityMark,
+      EntityNode.configure({
+        mappingRef,
+        onEntityClick: (id, pos) => onEntityClickRef.current?.(id, pos),
+      }),
     ],
-    content: value ?? '',
+    content: textToContent(value ?? ''),
     editorProps: {
       attributes: {
         class: 'entity-editor',
@@ -32,18 +72,26 @@ export function EntityInput({ value, onChange, placeholder }: EntityInputProps) 
       },
     },
     onUpdate({ editor }) {
-      // Return plain text — {{...}} tokens remain intact as text
-      const text = editor.getText()
+      const extensions = editor.extensionManager.extensions as Extensions
+      const text = generateText(editor.getJSON(), extensions, {
+        textSerializers: {
+          entity: ({ node }) => `{{${node.attrs.id}}}`,
+        },
+      })
       onChange?.(text)
     },
   })
 
-  // Sync controlled value changes from outside
   useEffect(() => {
     if (!editor) return
-    const current = editor.getText()
+    const extensions = editor.extensionManager.extensions as Extensions
+    const current = generateText(editor.getJSON(), extensions, {
+      textSerializers: {
+        entity: ({ node }) => `{{${node.attrs.id}}}`,
+      },
+    })
     if (value !== undefined && value !== current) {
-      editor.commands.setContent(value)
+      editor.commands.setContent(textToContent(value))
     }
   }, [value, editor])
 
