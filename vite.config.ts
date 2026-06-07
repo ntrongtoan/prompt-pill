@@ -7,9 +7,9 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
-      name: 'EntityHighlighter',
+      name: 'PromptPill',
       formats: ['es', 'cjs'],
-      fileName: (format) => `entity-highlighter.${format}.js`,
+      fileName: (format) => `prompt-pill.${format}.js`,
     },
     rollupOptions: {
       external: ['react', 'react-dom', '@tiptap/react', '@tiptap/starter-kit', '@tiptap/core', '@tiptap/pm'],

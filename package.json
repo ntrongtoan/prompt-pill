@@ -1,19 +1,53 @@
 {
-  "name": "entity-highlighter",
+  "name": "prompt-pill",
   "private": false,
   "version": "0.1.0",
+  "description": "A React rich-text input that renders {{variable}} tokens as interactive pill chips — built for AI prompt editors, agent builders, and workflow UIs.",
+  "keywords": [
+    "prompt",
+    "ai",
+    "llm",
+    "template",
+    "variable",
+    "entity",
+    "tiptap",
+    "prosemirror",
+    "react",
+    "input",
+    "highlight",
+    "pill",
+    "token",
+    "agent",
+    "workflow"
+  ],
+  "author": {
+    "name": "ntrongtoan",
+    "email": "toantrongvn@gmail.com"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/ntrongtoan/prompt-pill#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ntrongtoan/prompt-pill.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ntrongtoan/prompt-pill/issues"
+  },
+  "sideEffects": ["*.css"],
   "type": "module",
-  "main": "dist/entity-highlighter.cjs.js",
-  "module": "dist/entity-highlighter.es.js",
+  "main": "dist/prompt-pill.cjs.js",
+  "module": "dist/prompt-pill.es.js",
   "types": "dist/index.d.ts",
+  "style": "dist/prompt-pill.css",
   "exports": {
     ".": {
-      "import": "./dist/entity-highlighter.es.js",
-      "require": "./dist/entity-highlighter.cjs.js",
+      "import": "./dist/prompt-pill.es.js",
+      "require": "./dist/prompt-pill.cjs.js",
       "types": "./dist/index.d.ts"
-    }
+    },
+    "./dist/prompt-pill.css": "./dist/prompt-pill.css"
   },
-  "files": ["dist"],
+  "files": ["dist", "README.md", "LICENSE", "CHANGELOG.md"],
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
@@ -34,11 +68,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@storybook/addon-essentials": "^8.6.14",
-    "@storybook/blocks": "^8.6.14",
     "@storybook/react": "^10.4.2",
     "@storybook/react-vite": "^10.4.2",
-    "@storybook/test": "^8.6.15",
     "@tiptap/pm": "^3.26.0",
     "@tiptap/react": "^3.26.0",
     "@tiptap/starter-kit": "^3.26.0",

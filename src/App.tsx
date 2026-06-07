@@ -15,7 +15,7 @@ export default function App() {
 
   return (
     <div className="app">
-      <h1>Entity Syntax Highlighter</h1>
+      <h1>PromptPill</h1>
       <p className="subtitle">
         Tokens matching <code>{'{{variable}}'}</code>,{' '}
         <code>{'{{obj.key}}'}</code>, <code>{'{{arr[0].key}}'}</code> render as
