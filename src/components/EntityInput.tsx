@@ -1,8 +1,12 @@
-import { useEffect, useRef } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import { generateText, type JSONContent, type Extensions } from '@tiptap/core'
-import StarterKit from '@tiptap/starter-kit'
+import Document from '@tiptap/extension-document'
+import Paragraph from '@tiptap/extension-paragraph'
+import Text from '@tiptap/extension-text'
 import { EntityNode } from '../extensions/EntityNode'
+
+const BASE_EXTENSIONS: Extensions = [Document, Paragraph, Text]
 
 export interface EntityInputProps {
   value?: string
@@ -10,6 +14,11 @@ export interface EntityInputProps {
   placeholder?: string
   mapping?: Record<string, string>
   onEntityClick?: (id: string, pos: number) => void
+  extensions?: Extensions
+}
+
+export interface EntityInputHandle {
+  insertEntity: (id: string) => void
 }
 
 const ENTITY_SPLIT_REGEX = /(\{\{[\w.[\]]+\}\})/g
@@ -31,13 +40,10 @@ function textToContent(text: string): JSONContent {
   }
 }
 
-export function EntityInput({
-  value,
-  onChange,
-  placeholder,
-  mapping,
-  onEntityClick,
-}: EntityInputProps) {
+export const EntityInput = forwardRef<EntityInputHandle, EntityInputProps>(function EntityInput(
+  { value, onChange, placeholder, mapping, onEntityClick, extensions = [] }: EntityInputProps,
+  ref,
+) {
   const mappingRef = useRef(mapping)
   useEffect(() => {
     mappingRef.current = mapping
@@ -50,20 +56,12 @@ export function EntityInput({
 
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({
-        heading: false,
-        blockquote: false,
-        bulletList: false,
-        orderedList: false,
-        listItem: false,
-        codeBlock: false,
-        horizontalRule: false,
-      }),
-      // eslint-disable-next-line react-hooks/refs
       EntityNode.configure({
         mappingRef,
         onEntityClick: (id, pos) => onEntityClickRef.current?.(id, pos),
       }),
+      ...BASE_EXTENSIONS,
+      ...(extensions ?? []),
     ],
     content: textToContent(value ?? ''),
     editorProps: {
@@ -96,9 +94,20 @@ export function EntityInput({
     }
   }, [value, editor])
 
+  useImperativeHandle(
+    ref,
+    () => ({
+      insertEntity(id: string) {
+        if (!editor) return
+        editor.chain().focus().insertContent({ type: 'entity', attrs: { id } }).run()
+      },
+    }),
+    [editor],
+  )
+
   return (
     <div className="entity-input-wrapper">
       <EditorContent editor={editor} />
     </div>
   )
-}
+})
