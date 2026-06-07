@@ -18,11 +18,13 @@ export default defineConfig({
     rollupOptions: {
       external: (id) =>
         id === 'react' ||
+        id === 'react/jsx-runtime' ||
         id === 'react-dom' ||
         id.startsWith('@tiptap/'),
       output: {
         globals: {
           react: 'React',
+          'react/jsx-runtime': 'ReactJsxRuntime',
           'react-dom': 'ReactDOM',
           '@tiptap/react': 'TiptapReact',
           '@tiptap/core': 'TiptapCore',
