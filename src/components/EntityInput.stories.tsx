@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { useState } from 'react'
-import { EntityInput } from './EntityInput'
+import { useRef, useState } from 'react'
+import { EntityInput, type EntityInputHandle } from './EntityInput'
 
 const meta: Meta<typeof EntityInput> = {
   title: 'Components/EntityInput',
@@ -152,4 +152,55 @@ export const WithClickHandler: Story = {
     mapping: { 'entity.id': 'Widget' },
     onEntityClick: (id, pos) => alert(`Clicked "${id}" at pos ${pos}`),
   },
+}
+
+// ---------------------------------------------------------------------------
+// Insert entity via button
+// ---------------------------------------------------------------------------
+
+const AVAILABLE_ENTITIES: { id: string; label: string }[] = [
+  { id: 'user.name', label: 'User Name' },
+  { id: 'user.email', label: 'User Email' },
+  { id: 'news[0].title', label: 'News Title' },
+]
+
+function InsertButtonStory() {
+  const [value, setValue] = useState('Hello ')
+  const inputRef = useRef<EntityInputHandle>(null)
+
+  return (
+    <>
+      <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
+        {AVAILABLE_ENTITIES.map(({ id, label }) => (
+          <button
+            key={id}
+            onClick={() => inputRef.current?.insertEntity(id)}
+            style={{
+              padding: '4px 10px',
+              fontSize: 12,
+              cursor: 'pointer',
+              borderRadius: 4,
+              border: '1px solid #ccc',
+              background: '#fff',
+            }}
+          >
+            + {label}
+          </button>
+        ))}
+      </div>
+      <EntityInput
+        ref={inputRef}
+        value={value}
+        onChange={setValue}
+        mapping={Object.fromEntries(AVAILABLE_ENTITIES.map(({ id, label }) => [id, label]))}
+        placeholder="Click a button above to insert an entity at the caret…"
+      />
+      <ValueDisplay value={value} />
+    </>
+  )
+}
+
+export const InsertAtCaret: Story = {
+  name: 'Insert entity at caret position',
+  render: () => <InsertButtonStory />,
 }
