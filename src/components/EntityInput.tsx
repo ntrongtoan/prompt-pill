@@ -4,12 +4,25 @@ import { generateText, type JSONContent, type Extensions } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import { EntityNode } from '../extensions/EntityNode'
 
+const DEFAULT_EXTENSIONS: Extensions = [
+  StarterKit.configure({
+    heading: false,
+    blockquote: false,
+    bulletList: false,
+    orderedList: false,
+    listItem: false,
+    codeBlock: false,
+    horizontalRule: false,
+  }),
+]
+
 export interface EntityInputProps {
   value?: string
   onChange?: (value: string) => void
   placeholder?: string
   mapping?: Record<string, string>
   onEntityClick?: (id: string, pos: number) => void
+  extensions?: Extensions
 }
 
 export interface EntityInputHandle {
@@ -35,13 +48,17 @@ function textToContent(text: string): JSONContent {
   }
 }
 
-export const EntityInput = forwardRef<EntityInputHandle, EntityInputProps>(function EntityInput({
-  value,
-  onChange,
-  placeholder,
-  mapping,
-  onEntityClick,
-}: EntityInputProps, ref) {
+export const EntityInput = forwardRef<EntityInputHandle, EntityInputProps>(function EntityInput(
+  {
+    value,
+    onChange,
+    placeholder,
+    mapping,
+    onEntityClick,
+    extensions = DEFAULT_EXTENSIONS,
+  }: EntityInputProps,
+  ref,
+) {
   const mappingRef = useRef(mapping)
   useEffect(() => {
     mappingRef.current = mapping
@@ -54,15 +71,7 @@ export const EntityInput = forwardRef<EntityInputHandle, EntityInputProps>(funct
 
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({
-        heading: false,
-        blockquote: false,
-        bulletList: false,
-        orderedList: false,
-        listItem: false,
-        codeBlock: false,
-        horizontalRule: false,
-      }),
+      ...extensions,
       // eslint-disable-next-line react-hooks/refs
       EntityNode.configure({
         mappingRef,
@@ -100,16 +109,16 @@ export const EntityInput = forwardRef<EntityInputHandle, EntityInputProps>(funct
     }
   }, [value, editor])
 
-  useImperativeHandle(ref, () => ({
-    insertEntity(id: string) {
-      if (!editor) return
-      editor
-        .chain()
-        .focus()
-        .insertContent({ type: 'entity', attrs: { id } })
-        .run()
-    },
-  }), [editor])
+  useImperativeHandle(
+    ref,
+    () => ({
+      insertEntity(id: string) {
+        if (!editor) return
+        editor.chain().focus().insertContent({ type: 'entity', attrs: { id } }).run()
+      },
+    }),
+    [editor],
+  )
 
   return (
     <div className="entity-input-wrapper">
