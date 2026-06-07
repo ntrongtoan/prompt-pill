@@ -1,8 +1,8 @@
 import { Node, mergeAttributes, InputRule } from '@tiptap/core'
-import type { MutableRefObject } from 'react'
+import type { RefObject } from 'react'
 
 export interface EntityNodeOptions {
-  mappingRef?: MutableRefObject<Record<string, string> | undefined>
+  mappingRef?: RefObject<Record<string, string> | undefined>
   onEntityClick?: (id: string, pos: number) => void
 }
 
@@ -10,9 +10,18 @@ const ENTITY_INPUT_REGEX = /\{\{([\w.[\]]+)\}\}$/
 
 export const EntityNode = Node.create<EntityNodeOptions>({
   name: 'entity',
-  group: 'inline',
-  inline: true,
   atom: true,
+
+  addOptions() {
+    return {
+      mappingRef: undefined,
+      onEntityClick: undefined,
+    }
+  },
+
+  inline: true,
+
+  group: 'inline',
 
   addAttributes() {
     return {

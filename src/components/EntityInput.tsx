@@ -1,20 +1,12 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import { generateText, type JSONContent, type Extensions } from '@tiptap/core'
-import StarterKit from '@tiptap/starter-kit'
+import Document from '@tiptap/extension-document'
+import Paragraph from '@tiptap/extension-paragraph'
+import Text from '@tiptap/extension-text'
 import { EntityNode } from '../extensions/EntityNode'
 
-const DEFAULT_EXTENSIONS: Extensions = [
-  StarterKit.configure({
-    heading: false,
-    blockquote: false,
-    bulletList: false,
-    orderedList: false,
-    listItem: false,
-    codeBlock: false,
-    horizontalRule: false,
-  }),
-]
+const BASE_EXTENSIONS: Extensions = [Document, Paragraph, Text]
 
 export interface EntityInputProps {
   value?: string
@@ -49,14 +41,7 @@ function textToContent(text: string): JSONContent {
 }
 
 export const EntityInput = forwardRef<EntityInputHandle, EntityInputProps>(function EntityInput(
-  {
-    value,
-    onChange,
-    placeholder,
-    mapping,
-    onEntityClick,
-    extensions = DEFAULT_EXTENSIONS,
-  }: EntityInputProps,
+  { value, onChange, placeholder, mapping, onEntityClick, extensions = [] }: EntityInputProps,
   ref,
 ) {
   const mappingRef = useRef(mapping)
@@ -71,12 +56,12 @@ export const EntityInput = forwardRef<EntityInputHandle, EntityInputProps>(funct
 
   const editor = useEditor({
     extensions: [
-      ...extensions,
-      // eslint-disable-next-line react-hooks/refs
       EntityNode.configure({
         mappingRef,
         onEntityClick: (id, pos) => onEntityClickRef.current?.(id, pos),
       }),
+      ...BASE_EXTENSIONS,
+      ...(extensions ?? []),
     ],
     content: textToContent(value ?? ''),
     editorProps: {
