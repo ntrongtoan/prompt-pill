@@ -1,0 +1,5 @@
+import './prompt-pill.css'
+export { EntityInput } from './components/EntityInput'
+export type { EntityInputProps } from './components/EntityInput'
+export { parseEntities, ENTITY_REGEX } from './utils/parseEntities'
+export type { EntityMatch } from './utils/parseEntities'

@@ -1,0 +1,93 @@
+{
+  "name": "prompt-pill",
+  "private": false,
+  "version": "0.1.0",
+  "description": "A React rich-text input that renders {{variable}} tokens as interactive pill chips — built for AI prompt editors, agent builders, and workflow UIs.",
+  "keywords": [
+    "prompt",
+    "ai",
+    "llm",
+    "template",
+    "variable",
+    "entity",
+    "tiptap",
+    "prosemirror",
+    "react",
+    "input",
+    "highlight",
+    "pill",
+    "token",
+    "agent",
+    "workflow"
+  ],
+  "author": {
+    "name": "ntrongtoan",
+    "email": "toantrongvn@gmail.com"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/ntrongtoan/prompt-pill#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ntrongtoan/prompt-pill.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ntrongtoan/prompt-pill/issues"
+  },
+  "sideEffects": ["*.css"],
+  "type": "module",
+  "main": "dist/prompt-pill.cjs.js",
+  "module": "dist/prompt-pill.es.js",
+  "types": "dist/index.d.ts",
+  "style": "dist/prompt-pill.css",
+  "exports": {
+    ".": {
+      "import": "./dist/prompt-pill.es.js",
+      "require": "./dist/prompt-pill.cjs.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./dist/prompt-pill.css": "./dist/prompt-pill.css"
+  },
+  "files": ["dist", "README.md", "LICENSE", "CHANGELOG.md"],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "format": "prettier --write 'src/**/*.{ts,tsx}'",
+    "format:check": "prettier --check 'src/**/*.{ts,tsx}'",
+    "preview": "vite preview",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "peerDependencies": {
+    "@tiptap/core": ">=3",
+    "@tiptap/pm": ">=3",
+    "@tiptap/react": ">=3",
+    "@tiptap/starter-kit": ">=3",
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@storybook/react": "^10.4.2",
+    "@storybook/react-vite": "^10.4.2",
+    "@tiptap/pm": "^3.26.0",
+    "@tiptap/react": "^3.26.0",
+    "@tiptap/starter-kit": "^3.26.0",
+    "@types/node": "^24.12.3",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "eslint": "^10.3.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.6.0",
+    "prettier": "^3.8.3",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "storybook": "^10.4.2",
+    "typescript": "~6.0.2",
+    "typescript-eslint": "^8.59.2",
+    "vite": "^8.0.12"
+  }
+}

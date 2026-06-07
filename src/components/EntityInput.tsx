@@ -1,0 +1,104 @@
+import { useEffect, useRef } from 'react'
+import { useEditor, EditorContent } from '@tiptap/react'
+import { generateText, type JSONContent, type Extensions } from '@tiptap/core'
+import StarterKit from '@tiptap/starter-kit'
+import { EntityNode } from '../extensions/EntityNode'
+
+export interface EntityInputProps {
+  value?: string
+  onChange?: (value: string) => void
+  placeholder?: string
+  mapping?: Record<string, string>
+  onEntityClick?: (id: string, pos: number) => void
+}
+
+const ENTITY_SPLIT_REGEX = /(\{\{[\w.[\]]+\}\})/g
+
+function textToContent(text: string): JSONContent {
+  const parts = text.split(ENTITY_SPLIT_REGEX).filter(Boolean)
+
+  const inlineContent: JSONContent[] = parts.map((part) => {
+    const match = part.match(/^\{\{([\w.[\]]+)\}\}$/)
+    if (match) {
+      return { type: 'entity', attrs: { id: match[1] } }
+    }
+    return { type: 'text', text: part }
+  })
+
+  return {
+    type: 'doc',
+    content: [{ type: 'paragraph', content: inlineContent }],
+  }
+}
+
+export function EntityInput({
+  value,
+  onChange,
+  placeholder,
+  mapping,
+  onEntityClick,
+}: EntityInputProps) {
+  const mappingRef = useRef(mapping)
+  useEffect(() => {
+    mappingRef.current = mapping
+  }, [mapping])
+
+  const onEntityClickRef = useRef(onEntityClick)
+  useEffect(() => {
+    onEntityClickRef.current = onEntityClick
+  }, [onEntityClick])
+
+  const editor = useEditor({
+    extensions: [
+      StarterKit.configure({
+        heading: false,
+        blockquote: false,
+        bulletList: false,
+        orderedList: false,
+        listItem: false,
+        codeBlock: false,
+        horizontalRule: false,
+      }),
+      // eslint-disable-next-line react-hooks/refs
+      EntityNode.configure({
+        mappingRef,
+        onEntityClick: (id, pos) => onEntityClickRef.current?.(id, pos),
+      }),
+    ],
+    content: textToContent(value ?? ''),
+    editorProps: {
+      attributes: {
+        class: 'entity-editor',
+        'data-placeholder': placeholder ?? 'Type here… use {{variable}} syntax',
+      },
+    },
+    onUpdate({ editor }) {
+      const extensions = editor.extensionManager.extensions as Extensions
+      const text = generateText(editor.getJSON(), extensions, {
+        textSerializers: {
+          entity: ({ node }) => `{{${node.attrs.id}}}`,
+        },
+      })
+      onChange?.(text)
+    },
+  })
+
+  useEffect(() => {
+    if (!editor) return
+    const extensions = editor.extensionManager.extensions as Extensions
+    const current = generateText(editor.getJSON(), extensions, {
+      textSerializers: {
+        entity: ({ node }) => `{{${node.attrs.id}}}`,
+      },
+    })
+    if (value !== undefined && value !== current) {
+      editor.commands.setContent(textToContent(value))
+    }
+  }, [value, editor])
+
+  return (
+    <div className="entity-input-wrapper">
+      <EditorContent editor={editor} />
+    </div>
+  )
+}
