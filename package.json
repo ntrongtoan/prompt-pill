@@ -1,7 +1,7 @@
 {
   "name": "prompt-pill",
   "private": false,
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "A React rich-text input that renders {{variable}} tokens as interactive pill chips — built for AI prompt editors, agent builders, and workflow UIs.",
   "keywords": [
     "prompt",
